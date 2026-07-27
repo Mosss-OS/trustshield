@@ -6,6 +6,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/use-theme";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { AlertsBell } from "@/components/alerts-bell";
 import type { ReactNode } from "react";
 
 const NAV = [
@@ -125,6 +126,7 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
             <h1 className="text-base font-semibold tracking-tight">{title}</h1>
           </div>
           <div className="flex items-center gap-2">
+            <AlertsBell />
             <button
               onClick={toggleTheme}
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"

@@ -126,5 +126,17 @@ ${data.content}
       .single();
     if (rErr) throw new Error(rErr.message);
 
+    // Auto-create alert for high/critical severity findings
+    if (analysis.severity === "high" || analysis.severity === "medium") {
+      const severityLabel = analysis.severity === "high" ? "High" : "Medium";
+      const categoryLabel = analysis.category.replace(/_/g, " ");
+      await context.supabase.from("alerts").insert({
+        user_id: context.userId,
+        message: `${severityLabel}-severity ${categoryLabel} content detected. Review recommended.`,
+        alert_type: "new_mention",
+        related_scan_result_id: res.id,
+      });
+    }
+
     return { item, result: res };
   });

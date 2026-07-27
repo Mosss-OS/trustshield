@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      alerts: {
+        Row: {
+          alert_type: Database["public"]["Enums"]["alert_type"]
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          related_scan_result_id: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_type: Database["public"]["Enums"]["alert_type"]
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          related_scan_result_id?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_type?: Database["public"]["Enums"]["alert_type"]
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          related_scan_result_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_related_scan_result_id_fkey"
+            columns: ["related_scan_result_id"]
+            isOneToOne: false
+            referencedRelation: "screening_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_items: {
         Row: {
           content: string
@@ -183,6 +221,11 @@ export type Database = {
       }
     }
     Enums: {
+      alert_type:
+        | "new_mention"
+        | "severity_change"
+        | "request_update"
+        | "brand_milestone"
       app_role: "admin" | "user"
       screening_category:
         | "harmful_abusive"
@@ -331,6 +374,12 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      alert_type: [
+        "new_mention",
+        "severity_change",
+        "request_update",
+        "brand_milestone",
+      ],
       app_role: ["admin", "user"],
       screening_category: [
         "harmful_abusive",
