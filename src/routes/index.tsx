@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Shield, ScanLine, Sparkles, ShieldCheck, ArrowRight } from "lucide-react";
+import { Shield, ScanLine, Sparkles, ShieldCheck, ArrowRight, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/hooks/use-theme";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,6 +24,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
@@ -31,6 +34,13 @@ function Landing() {
           <span className="font-semibold tracking-tight">TrustShield</span>
         </Link>
         <nav className="flex items-center gap-3">
+          <button
+            onClick={toggleTheme}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
           <Link to="/auth" className="text-sm text-muted-foreground hover:text-foreground">
             Sign in
           </Link>

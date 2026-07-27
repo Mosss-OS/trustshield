@@ -13,6 +13,7 @@ import { Toaster } from "sonner";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
+import { initializeTheme } from "@/hooks/use-theme";
 
 
 function NotFoundComponent() {
@@ -112,13 +113,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+function ThemeInitScript() {
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `(${initializeTheme.toString()})();`,
+      }}
+    />
+  );
+}
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body>
+        <ThemeInitScript />
         {children}
         <Scripts />
       </body>

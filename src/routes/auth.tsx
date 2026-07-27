@@ -5,8 +5,9 @@ import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield } from "lucide-react";
+import { Shield, Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
+import { useTheme } from "@/hooks/use-theme";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -78,10 +79,13 @@ function AuthPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-12">
-        <Link to="/" className="mb-8 flex items-center gap-2">
-          <Shield className="h-5 w-5 text-primary" />
-          <span className="font-semibold tracking-tight">TrustShield</span>
-        </Link>
+        <div className="mb-8 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <Shield className="h-5 w-5 text-primary" />
+            <span className="font-semibold tracking-tight">TrustShield</span>
+          </Link>
+          <ThemeToggle />
+        </div>
 
         <div className="rounded-2xl border border-border bg-card p-8 shadow-sm">
           <h1 className="font-display text-3xl tracking-tight">
@@ -185,5 +189,18 @@ function AuthPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  return (
+    <button
+      onClick={toggleTheme}
+      className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+      aria-label="Toggle theme"
+    >
+      {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    </button>
   );
 }

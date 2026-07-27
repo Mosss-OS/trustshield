@@ -1,8 +1,9 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { Shield, LayoutDashboard, ScanLine, Sparkles, Settings, LogOut } from "lucide-react";
+import { Shield, LayoutDashboard, ScanLine, Sparkles, Settings, LogOut, Moon, Sun } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/hooks/use-theme";
 import type { ReactNode } from "react";
 
 const NAV = [
@@ -16,6 +17,7 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
   const router = useRouter();
   const queryClient = useQueryClient();
   const state = useRouterState({ select: (s) => s.location.pathname });
+  const { theme, toggleTheme } = useTheme();
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -63,13 +65,22 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
       <div className="md:pl-60">
         <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-border bg-background/80 px-6 backdrop-blur">
           <h1 className="text-base font-semibold tracking-tight">{title}</h1>
-          <div className="md:hidden">
+          <div className="flex items-center gap-2">
             <button
-              onClick={signOut}
-              className="text-sm text-muted-foreground hover:text-foreground"
+              onClick={toggleTheme}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              aria-label="Toggle theme"
             >
-              Sign out
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
+            <div className="md:hidden">
+              <button
+                onClick={signOut}
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Sign out
+              </button>
+            </div>
           </div>
         </header>
         <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
