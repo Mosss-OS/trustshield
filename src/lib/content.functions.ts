@@ -27,7 +27,7 @@ export const updateResult = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const patch: Record<string, boolean> = {};
+    const patch: { reviewed?: boolean; dismissed?: boolean } = {};
     if (typeof data.reviewed === "boolean") patch.reviewed = data.reviewed;
     if (typeof data.dismissed === "boolean") patch.dismissed = data.dismissed;
     const { error } = await context.supabase
@@ -38,3 +38,4 @@ export const updateResult = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
