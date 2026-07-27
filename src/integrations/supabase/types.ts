@@ -52,6 +52,66 @@ export type Database = {
           },
         ]
       }
+      brand_content: {
+        Row: {
+          content_text: string
+          content_type: Database["public"]["Enums"]["content_type"]
+          created_at: string
+          id: string
+          platform: Database["public"]["Enums"]["social_platform"]
+          scheduled_at: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content_text: string
+          content_type: Database["public"]["Enums"]["content_type"]
+          created_at?: string
+          id?: string
+          platform: Database["public"]["Enums"]["social_platform"]
+          scheduled_at?: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content_text?: string
+          content_type?: Database["public"]["Enums"]["content_type"]
+          created_at?: string
+          id?: string
+          platform?: Database["public"]["Enums"]["social_platform"]
+          scheduled_at?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      brand_health_scores: {
+        Row: {
+          breakdown: Json | null
+          computed_at: string
+          id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          breakdown?: Json | null
+          computed_at?: string
+          id?: string
+          score: number
+          user_id: string
+        }
+        Update: {
+          breakdown?: Json | null
+          computed_at?: string
+          id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       content_items: {
         Row: {
           content: string
@@ -227,6 +287,8 @@ export type Database = {
         | "request_update"
         | "brand_milestone"
       app_role: "admin" | "user"
+      content_status: "draft" | "scheduled" | "published"
+      content_type: "post" | "caption" | "script" | "bio"
       screening_category:
         | "harmful_abusive"
         | "reputation_risk"
@@ -381,6 +443,8 @@ export const Constants = {
         "brand_milestone",
       ],
       app_role: ["admin", "user"],
+      content_status: ["draft", "scheduled", "published"],
+      content_type: ["post", "caption", "script", "bio"],
       screening_category: [
         "harmful_abusive",
         "reputation_risk",
