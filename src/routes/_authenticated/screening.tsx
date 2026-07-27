@@ -221,7 +221,7 @@ function ScreeningPage() {
                       </div>
                       <button
                         onClick={() => {
-                          navigator.clipboard.writeText(openItem.suggested_response);
+                          navigator.clipboard.writeText(openItem.suggested_response ?? "");
                           toast.success("Copied");
                         }}
                         className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
