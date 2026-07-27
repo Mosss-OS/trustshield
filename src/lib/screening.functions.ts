@@ -12,6 +12,7 @@ const CategoryEnum = z.enum([
   "legitimate_criticism",
   "positive_on_brand",
   "neutral",
+  "impersonation",
 ]);
 const SeverityEnum = z.enum(["info", "low", "medium", "high"]);
 const ActionEnum = z.enum(["flag_for_removal", "respond_with_context", "leave_alone", "amplify"]);
@@ -32,9 +33,10 @@ CATEGORIES:
 - legitimate_criticism: factual, newsworthy, or public-record criticism of the user. This includes fair reporting, factual complaints, or matters of public interest.
 - positive_on_brand: helpful or positive content aligned with the user's brand.
 - neutral: informational or non-notable content.
+- impersonation: fake accounts or AI-generated content impersonating the user (same name/photo, different handle; deepfake content claiming to be the user).
 
 SUGGESTED ACTIONS — pick exactly one, with these HARD RULES:
-- flag_for_removal — ONLY for harmful_abusive content, or content that is provably false and defamatory. Never for content that is true, newsworthy, or a matter of public record.
+- flag_for_removal — ONLY for harmful_abusive content, impersonation, or content that is provably false and defamatory. Never for content that is true, newsworthy, or a matter of public record.
 - respond_with_context — for legitimate_criticism or ambiguous reputation_risk items. When you use this, ALSO provide a short, professional draft response in suggested_response.
 - leave_alone — for content that is true, newsworthy, public-record, or simply neutral. Never suggest hiding or burying such content.
 - amplify — for positive_on_brand content the user could share more widely.

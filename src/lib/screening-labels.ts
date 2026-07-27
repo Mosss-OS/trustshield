@@ -4,6 +4,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
   legitimate_criticism: "Legitimate criticism",
   positive_on_brand: "Positive / on-brand",
   neutral: "Neutral",
+  impersonation: "Impersonation / fake account",
 };
 
 export const ACTION_LABELS: Record<string, string> = {
