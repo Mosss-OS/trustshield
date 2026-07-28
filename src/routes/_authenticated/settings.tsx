@@ -5,6 +5,7 @@ import { useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { getProfile, completeOnboarding } from "@/lib/profile.functions";
 import { listHandles, addHandle, removeHandle } from "@/lib/handles.functions";
+import { getAuditLog, exportUserData, deleteUserAccount, logAuditEvent } from "@/lib/gdpr.functions";
 import { PLATFORMS } from "@/lib/screening-labels";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,18 +18,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2 } from "lucide-react";
+import { Trash2, Download, AlertTriangle, History, Shield, FileText, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
       { title: "Settings — TrustShield" },
-      { name: "description", content: "Manage your profile, tone, and monitored handles." },
+      { name: "description", content: "Manage your profile, tone, monitored handles, and data." },
     ],
   }),
   component: SettingsPage,
 });
+
+const ACTION_LABELS: Record<string, string> = {
+  screening_created: "Screening created",
+  screening_reviewed: "Screening reviewed",
+  screening_dismissed: "Screening dismissed",
+  remediation_created: "Remediation request created",
+  remediation_status_changed: "Remediation status changed",
+  brand_content_saved: "Brand content saved",
+  brand_content_deleted: "Brand content deleted",
+  profile_updated: "Profile updated",
+  handle_added: "Handle added",
+  handle_removed: "Handle removed",
+  account_deleted: "Account deleted",
+  data_exported: "Data exported",
+};
 
 function SettingsPage() {
   const qc = useQueryClient();
@@ -37,22 +53,34 @@ function SettingsPage() {
   const listHandlesFn = useServerFn(listHandles);
   const addHandleFn = useServerFn(addHandle);
   const removeHandleFn = useServerFn(removeHandle);
+  const auditLogFn = useServerFn(getAuditLog);
+  const exportFn = useServerFn(exportUserData);
+  const deleteFn = useServerFn(deleteUserAccount);
+  const logEventFn = useServerFn(logAuditEvent);
 
   const { data: profile } = useQuery({ queryKey: ["profile"], queryFn: () => getProfileFn() });
   const { data: handles = [] } = useQuery({
     queryKey: ["handles"],
     queryFn: () => listHandlesFn(),
   });
+  const { data: auditLog = [], isLoading: loadingAudit } = useQuery({
+    queryKey: ["audit-log"],
+    queryFn: () => auditLogFn(),
+  });
 
   const [newPlatform, setNewPlatform] = useState("x");
   const [newHandle, setNewHandle] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const saveMut = useMutation({
     mutationFn: (input: any) => saveFn({ data: input }),
     onSuccess: () => {
       toast.success("Saved");
+      logEventFn({ data: { action: "profile_updated", entity_type: "profile" } });
       qc.invalidateQueries({ queryKey: ["profile"] });
       qc.invalidateQueries({ queryKey: ["handles"] });
+      qc.invalidateQueries({ queryKey: ["audit-log"] });
     },
     onError: (e: any) => toast.error(e?.message ?? "Save failed"),
   });
@@ -61,18 +89,51 @@ function SettingsPage() {
     mutationFn: (input: any) => addHandleFn({ data: input }),
     onSuccess: () => {
       setNewHandle("");
+      logEventFn({ data: { action: "handle_added", entity_type: "monitored_handles" } });
       qc.invalidateQueries({ queryKey: ["handles"] });
+      qc.invalidateQueries({ queryKey: ["audit-log"] });
     },
   });
 
   const removeMut = useMutation({
     mutationFn: (input: any) => removeHandleFn({ data: input }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["handles"] }),
+    onSuccess: () => {
+      logEventFn({ data: { action: "handle_removed", entity_type: "monitored_handles" } });
+      qc.invalidateQueries({ queryKey: ["handles"] });
+      qc.invalidateQueries({ queryKey: ["audit-log"] });
+    },
+  });
+
+  const exportMut = useMutation({
+    mutationFn: () => exportFn(),
+    onSuccess: (data: any) => {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `trustshield-data-export-${new Date().toISOString().split("T")[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      logEventFn({ data: { action: "data_exported", entity_type: "user" } });
+      qc.invalidateQueries({ queryKey: ["audit-log"] });
+      toast.success("Data exported successfully");
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Export failed"),
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: (input: any) => deleteFn({ data: input }),
+    onSuccess: () => {
+      toast.success("Account deleted");
+      window.location.href = "/auth";
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Delete failed"),
   });
 
   return (
     <AppShell title="Settings">
       <div className="space-y-8">
+        {/* Profile & Voice */}
         <section className="rounded-2xl border border-border bg-card p-6">
           <h2 className="text-base font-semibold">Profile & voice</h2>
           <form
@@ -92,17 +153,14 @@ function SettingsPage() {
             <Field label="Display name" name="display_name" defaultValue={profile?.display_name ?? ""} />
             <Field label="Industry" name="industry" defaultValue={profile?.industry ?? ""} />
             <FieldArea label="Goals" name="goals" defaultValue={profile?.goals ?? ""} />
-            <FieldArea
-              label="Tone & voice"
-              name="tone_voice"
-              defaultValue={profile?.tone_voice ?? ""}
-            />
+            <FieldArea label="Tone & voice" name="tone_voice" defaultValue={profile?.tone_voice ?? ""} />
             <Button type="submit" disabled={saveMut.isPending}>
               {saveMut.isPending ? "Saving…" : "Save changes"}
             </Button>
           </form>
         </section>
 
+        {/* Monitored Handles */}
         <section className="rounded-2xl border border-border bg-card p-6">
           <h2 className="text-base font-semibold">Monitored handles</h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -160,6 +218,125 @@ function SettingsPage() {
             </Button>
           </form>
         </section>
+
+        {/* Legal Pages */}
+        <section className="rounded-2xl border border-border bg-card p-6">
+          <h2 className="text-base font-semibold">Legal</h2>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Button variant="outline" asChild>
+              <a href="/terms" target="_blank" rel="noopener noreferrer">
+                <FileText className="h-4 w-4 mr-2" /> Terms of Service
+              </a>
+            </Button>
+            <Button variant="outline" asChild>
+              <a href="/privacy" target="_blank" rel="noopener noreferrer">
+                <Shield className="h-4 w-4 mr-2" /> Privacy Policy
+              </a>
+            </Button>
+          </div>
+        </section>
+
+        {/* Data Export */}
+        <section className="rounded-2xl border border-border bg-card p-6">
+          <h2 className="text-base font-semibold">Export my data</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Download all your TrustShield data as a JSON file. This includes your profile, screening results,
+            brand content, alerts, and audit log.
+          </p>
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={() => exportMut.mutate()}
+            disabled={exportMut.isPending}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            {exportMut.isPending ? "Exporting…" : "Export data (JSON)"}
+          </Button>
+        </section>
+
+        {/* Audit Log */}
+        <section className="rounded-2xl border border-border bg-card p-6">
+          <div className="flex items-center gap-2">
+            <History className="h-4 w-4" />
+            <h2 className="text-base font-semibold">Audit log</h2>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            History of actions taken on your account.
+          </p>
+          <div className="mt-4 space-y-2">
+            {loadingAudit ? (
+              <p className="text-sm text-muted-foreground">Loading…</p>
+            ) : auditLog.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No activity yet.</p>
+            ) : (
+              auditLog.map((entry: any) => (
+                <div
+                  key={entry.id}
+                  className="flex items-center justify-between rounded-md border border-border bg-background px-3 py-2 text-sm"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{ACTION_LABELS[entry.action] ?? entry.action}</span>
+                    <span className="text-xs text-muted-foreground">{entry.entity_type}</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(entry.created_at).toLocaleDateString()} {new Date(entry.created_at).toLocaleTimeString()}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+
+        {/* Delete Account */}
+        <section className="rounded-2xl border border-destructive/30 bg-card p-6">
+          <div className="flex items-center gap-2 text-destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <h2 className="text-base font-semibold">Delete account</h2>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Permanently delete your account and all associated data. This action cannot be undone.
+          </p>
+          {!showDeleteConfirm ? (
+            <Button
+              variant="destructive"
+              className="mt-4"
+              onClick={() => setShowDeleteConfirm(true)}
+            >
+              Delete my account
+            </Button>
+          ) : (
+            <div className="mt-4 space-y-3">
+              <p className="text-sm text-destructive font-medium">
+                Enter your password to confirm account deletion:
+              </p>
+              <div className="flex gap-2">
+                <Input
+                  type="password"
+                  placeholder="Your password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  className="max-w-xs"
+                />
+                <Button
+                  variant="destructive"
+                  disabled={!deletePassword || deleteMut.isPending}
+                  onClick={() => deleteMut.mutate({ password: deletePassword })}
+                >
+                  {deleteMut.isPending ? "Deleting…" : "Confirm delete"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeletePassword("");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </section>
       </div>
     </AppShell>
   );
@@ -173,6 +350,7 @@ function Field({ label, name, defaultValue }: { label: string; name: string; def
     </div>
   );
 }
+
 function FieldArea({ label, name, defaultValue }: { label: string; name: string; defaultValue: string }) {
   return (
     <div className="space-y-2">

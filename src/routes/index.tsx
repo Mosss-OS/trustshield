@@ -128,7 +128,13 @@ function Landing() {
       </section>
 
       <footer className="border-t border-border py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} TrustShield
+        <div className="flex items-center justify-center gap-4">
+          <span>© {new Date().getFullYear()} TrustShield</span>
+          <span className="text-border">·</span>
+          <Link to="/terms" className="hover:text-foreground">Terms of Service</Link>
+          <span className="text-border">·</span>
+          <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
+        </div>
       </footer>
     </div>
   );
