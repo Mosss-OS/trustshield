@@ -169,6 +169,51 @@ export type Database = {
         }
         Relationships: []
       }
+      integrations: {
+        Row: {
+          access_token_encrypted: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          last_synced_at: string | null
+          provider: Database["public"]["Enums"]["integration_provider"]
+          provider_user_id: string | null
+          provider_username: string | null
+          refresh_token_encrypted: string | null
+          status: Database["public"]["Enums"]["integration_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token_encrypted?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          last_synced_at?: string | null
+          provider: Database["public"]["Enums"]["integration_provider"]
+          provider_user_id?: string | null
+          provider_username?: string | null
+          refresh_token_encrypted?: string | null
+          status?: Database["public"]["Enums"]["integration_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token_encrypted?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          last_synced_at?: string | null
+          provider?: Database["public"]["Enums"]["integration_provider"]
+          provider_user_id?: string | null
+          provider_username?: string | null
+          refresh_token_encrypted?: string | null
+          status?: Database["public"]["Enums"]["integration_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       monitored_handles: {
         Row: {
           created_at: string
@@ -363,6 +408,14 @@ export type Database = {
       app_role: "admin" | "user"
       content_status: "draft" | "scheduled" | "published"
       content_type: "post" | "caption" | "script" | "bio"
+      integration_provider:
+        | "x"
+        | "instagram"
+        | "linkedin"
+        | "tiktok"
+        | "facebook"
+        | "youtube"
+      integration_status: "connected" | "disconnected" | "error"
       request_status: "pending" | "submitted" | "resolved" | "denied"
       request_type:
         | "dmca"
