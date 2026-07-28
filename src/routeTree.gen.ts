@@ -19,6 +19,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedBrandRouteImport } from './routes/_authenticated/brand'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedRemediationRouteImport } from './routes/_authenticated/remediation'
 import { Route as AuthenticatedScreeningRouteImport } from './routes/_authenticated/screening'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 
@@ -71,6 +72,12 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRemediationRoute =
+  AuthenticatedRemediationRouteImport.update({
+    id: '/remediation',
+    path: '/remediation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedScreeningRoute = AuthenticatedScreeningRouteImport.update({
   id: '/screening',
   path: '/screening',
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/brand': typeof AuthenticatedBrandRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/remediation': typeof AuthenticatedRemediationRoute
   '/screening': typeof AuthenticatedScreeningRoute
   '/settings': typeof AuthenticatedSettingsRoute
 }
@@ -105,6 +113,7 @@ export interface FileRoutesByTo {
   '/brand': typeof AuthenticatedBrandRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/remediation': typeof AuthenticatedRemediationRoute
   '/screening': typeof AuthenticatedScreeningRoute
   '/settings': typeof AuthenticatedSettingsRoute
 }
@@ -120,6 +129,7 @@ export interface FileRoutesById {
   '/_authenticated/brand': typeof AuthenticatedBrandRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/remediation': typeof AuthenticatedRemediationRoute
   '/_authenticated/screening': typeof AuthenticatedScreeningRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
 }
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/brand'
     | '/dashboard'
     | '/onboarding'
+    | '/remediation'
     | '/screening'
     | '/settings'
   fileRoutesByTo: FileRoutesByTo
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/brand'
     | '/dashboard'
     | '/onboarding'
+    | '/remediation'
     | '/screening'
     | '/settings'
   id:
@@ -162,6 +174,7 @@ export interface FileRouteTypes {
     | '/_authenticated/brand'
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
+    | '/_authenticated/remediation'
     | '/_authenticated/screening'
     | '/_authenticated/settings'
   fileRoutesById: FileRoutesById
@@ -248,6 +261,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/remediation': {
+      id: '/_authenticated/remediation'
+      path: '/remediation'
+      fullPath: '/remediation'
+      preLoaderRoute: typeof AuthenticatedRemediationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/screening': {
       id: '/_authenticated/screening'
       path: '/screening'
@@ -269,6 +289,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBrandRoute: typeof AuthenticatedBrandRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedRemediationRoute: typeof AuthenticatedRemediationRoute
   AuthenticatedScreeningRoute: typeof AuthenticatedScreeningRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
 }
@@ -277,6 +298,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBrandRoute: AuthenticatedBrandRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedRemediationRoute: AuthenticatedRemediationRoute,
   AuthenticatedScreeningRoute: AuthenticatedScreeningRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
 }
