@@ -226,6 +226,50 @@ export type Database = {
         }
         Relationships: []
       }
+      remediation_requests: {
+        Row: {
+          created_at: string
+          id: string
+          request_body: string
+          request_type: Database["public"]["Enums"]["request_type"]
+          resolved_at: string | null
+          scan_result_id: string
+          status: Database["public"]["Enums"]["request_status"]
+          submitted_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          request_body: string
+          request_type: Database["public"]["Enums"]["request_type"]
+          resolved_at?: string | null
+          scan_result_id: string
+          status?: Database["public"]["Enums"]["request_status"]
+          submitted_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          request_body?: string
+          request_type?: Database["public"]["Enums"]["request_type"]
+          resolved_at?: string | null
+          scan_result_id?: string
+          status?: Database["public"]["Enums"]["request_status"]
+          submitted_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "remediation_requests_scan_result_id_fkey"
+            columns: ["scan_result_id"]
+            isOneToOne: false
+            referencedRelation: "screening_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       screening_results: {
         Row: {
           category: Database["public"]["Enums"]["screening_category"]
@@ -319,6 +363,12 @@ export type Database = {
       app_role: "admin" | "user"
       content_status: "draft" | "scheduled" | "published"
       content_type: "post" | "caption" | "script" | "bio"
+      request_status: "pending" | "submitted" | "resolved" | "denied"
+      request_type:
+        | "dmca"
+        | "defamation"
+        | "gdpr"
+        | "platform_report"
       screening_category:
         | "harmful_abusive"
         | "reputation_risk"

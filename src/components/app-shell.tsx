@@ -1,5 +1,5 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { Shield, LayoutDashboard, ScanLine, Sparkles, Settings, LogOut, Moon, Sun, Menu } from "lucide-react";
+import { Shield, LayoutDashboard, ScanLine, Sparkles, Settings, LogOut, Moon, Sun, Menu, FileWarning } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -13,6 +13,7 @@ const NAV = [
   { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { to: "/screening", label: "Screening", icon: ScanLine },
   { to: "/brand", label: "Brand Builder", icon: Sparkles },
+  { to: "/remediation", label: "Remediation", icon: FileWarning },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 

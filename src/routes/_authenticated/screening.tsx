@@ -5,6 +5,7 @@ import { useState, useCallback } from "react";
 import { AppShell } from "@/components/app-shell";
 import { analyzeContent } from "@/lib/screening.functions";
 import { listScreenings, updateResult } from "@/lib/content.functions";
+import { createRemediationRequest } from "@/lib/remediation.functions";
 import {
   CATEGORY_LABELS,
   SEVERITY_CLASS,
@@ -31,7 +32,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { toast } from "sonner";
-import { Copy, Check, X, Plus, Trash2 } from "lucide-react";
+import { Copy, Check, X, Plus, Trash2, Shield } from "lucide-react";
 
 interface ContentItem {
   id: string;
@@ -71,6 +72,8 @@ function ScreeningPage() {
   ]);
   const [batchProgress, setBatchProgress] = useState<{ current: number; total: number } | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [requestType, setRequestType] = useState<string>("platform_report");
+  const [creatingRequest, setCreatingRequest] = useState(false);
 
   const analyzeMut = useMutation({
     mutationFn: (input: any) => analyzeFn({ data: input }),
@@ -134,6 +137,25 @@ function ScreeningPage() {
     setBatchProgress(null);
     toast.success(`Screened ${validItems.length} items`);
     setItems([{ id: generateItemId(), content: "", platform: "x", source_url: "" }]);
+  }
+
+  async function handleRequestRemoval() {
+    if (!openItem) return;
+    setCreatingRequest(true);
+    try {
+      await createRemediationRequest({
+        data: {
+          scan_result_id: openItem.id,
+          request_type: requestType as any,
+        },
+      });
+      toast.success("Remediation request created");
+      setOpenId(null);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to create request");
+    } finally {
+      setCreatingRequest(false);
+    }
   }
 
   return (
@@ -352,6 +374,34 @@ function ScreeningPage() {
                     <Check className="mr-1 h-4 w-4" />
                     {openItem.reviewed ? "Mark unreviewed" : "Mark reviewed"}
                   </Button>
+                  {(openItem.severity === "medium" || openItem.severity === "high") && (
+                    <Select value={requestType} onValueChange={setRequestType}>
+                      <SelectTrigger className="w-[160px] h-8">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="dmca">DMCA Takedown</SelectItem>
+                        <SelectItem value="defamation">Defamation Notice</SelectItem>
+                        <SelectItem value="gdpr">GDPR Deletion</SelectItem>
+                        <SelectItem value="platform_report">Platform Report</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                  {(openItem.severity === "medium" || openItem.severity === "high") && (
+                    <Button
+                      variant="default"
+                      size="sm"
+                      disabled={creatingRequest}
+                      onClick={handleRequestRemoval}
+                    >
+                      {creatingRequest ? (
+                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Shield className="mr-1 h-4 w-4" />
+                      )}
+                      Request Removal
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="sm"
