@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { AppShell } from "@/components/app-shell";
 import { analyzeContent } from "@/lib/screening.functions";
 import { listScreenings, updateResult } from "@/lib/content.functions";
@@ -31,7 +31,19 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { toast } from "sonner";
-import { Copy, Check, X } from "lucide-react";
+import { Copy, Check, X, Plus, Trash2 } from "lucide-react";
+
+interface ContentItem {
+  id: string;
+  content: string;
+  platform: string;
+  source_url: string;
+}
+
+let itemIdCounter = 0;
+function generateItemId(): string {
+  return `item-${++itemIdCounter}-${Date.now()}`;
+}
 
 export const Route = createFileRoute("/_authenticated/screening")({
   head: () => ({
@@ -54,17 +66,15 @@ function ScreeningPage() {
     queryFn: () => listFn(),
   });
 
-  const [content, setContent] = useState("");
-  const [platform, setPlatform] = useState<string>("x");
-  const [sourceUrl, setSourceUrl] = useState("");
+  const [items, setItems] = useState<ContentItem[]>([
+    { id: generateItemId(), content: "", platform: "x", source_url: "" },
+  ]);
+  const [batchProgress, setBatchProgress] = useState<{ current: number; total: number } | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
 
   const analyzeMut = useMutation({
     mutationFn: (input: any) => analyzeFn({ data: input }),
     onSuccess: () => {
-      toast.success("Analysis complete");
-      setContent("");
-      setSourceUrl("");
       qc.invalidateQueries({ queryKey: ["screenings"] });
     },
     onError: (e: any) => toast.error(e?.message ?? "Analysis failed"),
@@ -78,59 +88,155 @@ function ScreeningPage() {
   const active = results.filter((r: any) => !r.dismissed);
   const openItem = results.find((r: any) => r.id === openId);
 
+  const validItems = items.filter((item) => item.content.trim().length > 0);
+  const isAnalyzing = analyzeMut.isPending || batchProgress !== null;
+
+  const addItem = useCallback(() => {
+    setItems((prev) => [
+      ...prev,
+      { id: generateItemId(), content: "", platform: "x", source_url: "" },
+    ]);
+  }, []);
+
+  const removeItem = useCallback((id: string) => {
+    setItems((prev) => {
+      if (prev.length <= 1) return prev;
+      return prev.filter((item) => item.id !== id);
+    });
+  }, []);
+
+  const updateItem = useCallback((id: string, field: keyof ContentItem, value: string) => {
+    setItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+    );
+  }, []);
+
+  async function handleBatchScreen() {
+    if (validItems.length === 0) return;
+
+    setBatchProgress({ current: 0, total: validItems.length });
+
+    for (let i = 0; i < validItems.length; i++) {
+      const item = validItems[i];
+      setBatchProgress({ current: i + 1, total: validItems.length });
+
+      try {
+        await analyzeMut.mutateAsync({
+          content: item.content,
+          platform: item.platform,
+          source_url: item.source_url || undefined,
+        });
+      } catch {
+        // Error is already handled by the mutation
+      }
+    }
+
+    setBatchProgress(null);
+    toast.success(`Screened ${validItems.length} items`);
+    setItems([{ id: generateItemId(), content: "", platform: "x", source_url: "" }]);
+  }
+
   return (
     <AppShell title="Screening">
       <section className="rounded-2xl border border-border bg-card p-6">
-        <h2 className="text-base font-semibold">Screen a piece of content</h2>
+        <h2 className="text-base font-semibold">Screen content</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Paste text you posted, a comment about you, or an article excerpt.
+          Add one or more pieces of content to analyze. Paste text you posted, comments about you, or article excerpts.
         </p>
-        <form
-          className="mt-4 space-y-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!content.trim()) return;
-            analyzeMut.mutate({ content, platform, source_url: sourceUrl });
-          }}
-        >
-          <Textarea
-            placeholder="Paste the content to analyze…"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={4}
-            maxLength={8000}
-            required
-          />
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Platform</Label>
-              <Select value={platform} onValueChange={setPlatform}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PLATFORMS.map((p) => (
-                    <SelectItem key={p.value} value={p.value}>
-                      {p.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Source URL (optional)</Label>
-              <Input
-                type="url"
-                placeholder="https://…"
-                value={sourceUrl}
-                onChange={(e) => setSourceUrl(e.target.value)}
+
+        <div className="mt-4 space-y-4">
+          {items.map((item, index) => (
+            <div
+              key={item.id}
+              className="rounded-lg border border-border bg-background p-4 space-y-3"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Item {index + 1}
+                </span>
+                {items.length > 1 && (
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              <Textarea
+                placeholder="Paste the content to analyze…"
+                value={item.content}
+                onChange={(e) => updateItem(item.id, "content", e.target.value)}
+                rows={3}
+                maxLength={8000}
               />
+              <div className="grid gap-3 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label className="text-xs">Platform</Label>
+                  <Select
+                    value={item.platform}
+                    onValueChange={(val) => updateItem(item.id, "platform", val)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PLATFORMS.map((p) => (
+                        <SelectItem key={p.value} value={p.value}>
+                          {p.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">Source URL (optional)</Label>
+                  <Input
+                    type="url"
+                    placeholder="https://…"
+                    value={item.source_url}
+                    onChange={(e) => updateItem(item.id, "source_url", e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
+          ))}
+
+          <div className="flex flex-wrap gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addItem}
+              disabled={isAnalyzing}
+            >
+              <Plus className="h-4 w-4 mr-1" /> Add another
+            </Button>
           </div>
-          <Button type="submit" disabled={analyzeMut.isPending}>
-            {analyzeMut.isPending ? "Analyzing…" : "Analyze"}
-          </Button>
-        </form>
+
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={handleBatchScreen}
+              disabled={validItems.length === 0 || isAnalyzing}
+            >
+              {batchProgress
+                ? `Screening ${batchProgress.current} of ${batchProgress.total}…`
+                : isAnalyzing
+                  ? "Analyzing…"
+                  : `Screen ${validItems.length} item${validItems.length !== 1 ? "s" : ""}`}
+            </Button>
+            {batchProgress && (
+              <div className="h-2 w-32 overflow-hidden rounded-full bg-secondary">
+                <div
+                  className="h-full bg-primary transition-all"
+                  style={{
+                    width: `${(batchProgress.current / batchProgress.total) * 100}%`,
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </section>
 
       <section className="mt-10">
