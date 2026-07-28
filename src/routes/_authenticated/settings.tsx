@@ -18,7 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, Download, AlertTriangle, History, Shield, FileText, ExternalLink } from "lucide-react";
+import { getNotificationPreferences, updateNotificationPreferences } from "@/lib/notification-preferences.functions";
+import { Trash2, Download, AlertTriangle, History, Shield, FileText, ExternalLink, Bell } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -219,6 +220,9 @@ function SettingsPage() {
           </form>
         </section>
 
+        {/* Notification Preferences */}
+        <NotificationPreferencesSection />
+
         {/* Legal Pages */}
         <section className="rounded-2xl border border-border bg-card p-6">
           <h2 className="text-base font-semibold">Legal</h2>
@@ -339,6 +343,70 @@ function SettingsPage() {
         </section>
       </div>
     </AppShell>
+  );
+}
+
+function NotificationPreferencesSection() {
+  const qc = useQueryClient();
+  const getPrefsFn = useServerFn(getNotificationPreferences);
+  const updatePrefsFn = useServerFn(updateNotificationPreferences);
+
+  const { data: prefs, isLoading } = useQuery({
+    queryKey: ["notification-preferences"],
+    queryFn: () => getPrefsFn(),
+  });
+
+  const updateMut = useMutation({
+    mutationFn: (input: any) => updatePrefsFn({ data: input }),
+    onSuccess: () => {
+      toast.success("Notification preferences saved");
+      qc.invalidateQueries({ queryKey: ["notification-preferences"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Save failed"),
+  });
+
+  if (isLoading || !prefs) return null;
+
+  const toggles = [
+    { key: "email_high_severity", label: "High severity alerts", desc: "Get notified immediately for high-risk content" },
+    { key: "email_medium_severity", label: "Medium severity alerts", desc: "Notifications for medium-risk content" },
+    { key: "email_low_severity", label: "Low severity alerts", desc: "Notifications for low-risk content" },
+    { key: "email_remediation_updates", label: "Remediation updates", desc: "Status changes on your takedown requests" },
+    { key: "email_weekly_summary", label: "Weekly summary", desc: "Digest of your brand monitoring activity" },
+    { key: "email_brand_health", label: "Brand health reports", desc: "Periodic brand health score updates" },
+  ] as const;
+
+  return (
+    <section className="rounded-2xl border border-border bg-card p-6">
+      <div className="flex items-center gap-2">
+        <Bell className="h-4 w-4" />
+        <h2 className="text-base font-semibold">Email notifications</h2>
+      </div>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Choose which email notifications you'd like to receive
+      </p>
+      <div className="mt-4 space-y-3">
+        {toggles.map(({ key, label, desc }) => (
+          <label
+            key={key}
+            className="flex items-center justify-between rounded-md border border-border bg-background px-4 py-3 cursor-pointer hover:bg-accent/50 transition-colors"
+          >
+            <div>
+              <div className="text-sm font-medium">{label}</div>
+              <div className="text-xs text-muted-foreground">{desc}</div>
+            </div>
+            <input
+              type="checkbox"
+              checked={(prefs as any)[key]}
+              onChange={(e) =>
+                updateMut.mutate({ ...(prefs as any), [key]: e.target.checked })
+              }
+              className="h-4 w-4 rounded border-border"
+            />
+          </label>
+        ))}
+      </div>
+    </section>
   );
 }
 
