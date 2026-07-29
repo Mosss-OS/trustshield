@@ -36,7 +36,7 @@ export const createRemediationRequest = createServerFn({ method: "POST" })
 
     const gateway = getGateway();
 
-    const SYSTEM_PROMPT = `You are a legal notice drafter for TrustShield. Generate a professional ${data.request_type.toUpperCase()} notice based on the provided content and user information. Include:
+    const SYSTEM_PROMPT = `You are a legal notice drafter for Pecto. Generate a professional ${data.request_type.toUpperCase()} notice based on the provided content and user information. Include:
 - Proper legal formatting
 - Specific references to the content in question
 - Appropriate legal basis

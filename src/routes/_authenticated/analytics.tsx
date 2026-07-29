@@ -72,7 +72,7 @@ const REQUEST_STATUS_COLORS: Record<string, string> = {
 export const Route = createFileRoute("/_authenticated/analytics")({
   head: () => ({
     meta: [
-      { title: "Analytics — TrustShield" },
+      { title: "Analytics — Pecto" },
       { name: "description", content: "View analytics and trends for your brand monitoring." },
     ],
   }),
@@ -113,7 +113,7 @@ function AnalyticsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "trustshield-analytics.csv";
+    a.download = "pecto-analytics.csv";
     a.click();
     URL.revokeObjectURL(url);
   };

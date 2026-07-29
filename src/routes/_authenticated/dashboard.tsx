@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Overview — TrustShield" },
+      { title: "Overview — Pecto" },
       { name: "description", content: "Your reputation risk score, recent flags, and brand growth at a glance." },
     ],
   }),

@@ -30,7 +30,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/brand")({
   head: () => ({
     meta: [
-      { title: "Brand Builder — TrustShield" },
+      { title: "Brand Builder — Pecto" },
       { name: "description", content: "Draft on-brand posts tuned to your tone and goals." },
     ],
   }),

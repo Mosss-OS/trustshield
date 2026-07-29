@@ -22,8 +22,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
     meta: [
-      { title: "Get started — TrustShield" },
-      { name: "description", content: "Tell TrustShield about you so screening and drafts fit your voice." },
+      { title: "Get started — Pecto" },
+      { name: "description", content: "Tell Pecto about you so screening and drafts fit your voice." },
     ],
   }),
   component: OnboardingPage,
@@ -143,7 +143,7 @@ function OnboardingPage() {
       {/* Header */}
       <div className="mb-8 flex items-center gap-2">
         <Shield className="h-5 w-5 text-primary" />
-        <span className="font-semibold tracking-tight">TrustShield</span>
+        <span className="font-semibold tracking-tight">Pecto</span>
       </div>
 
       {/* Progress indicator */}
@@ -188,7 +188,7 @@ function OnboardingPage() {
         {/* Step 0: Welcome */}
         {step === 0 && (
           <div className="space-y-6">
-            <h1 className="font-display text-4xl tracking-tight">Welcome to TrustShield</h1>
+            <h1 className="font-display text-4xl tracking-tight">Welcome to Pecto</h1>
             <p className="text-muted-foreground text-lg">
               Your AI-powered brand reputation guardian. Let's set you up in just a few steps.
             </p>

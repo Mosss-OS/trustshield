@@ -81,14 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "TrustShield — AI Reputation & Personal Brand Platform" },
+      { title: "Pecto — Guard your reputation, grow your brand" },
       {
         name: "description",
         content:
-          "TrustShield scans your online presence for reputational risk, helps you respond, and builds your personal brand — with explainable AI.",
+          "Pecto scans your online presence for reputational risk, helps you respond, and builds your personal brand — with explainable AI.",
       },
-      { name: "author", content: "TrustShield" },
-      { property: "og:title", content: "TrustShield — AI Reputation & Personal Brand" },
+      { name: "author", content: "Pecto" },
+      { property: "og:title", content: "Pecto — Guard your reputation, grow your brand" },
       {
         property: "og:description",
         content: "Protect your reputation and grow your brand with explainable AI.",

@@ -4,8 +4,8 @@ import { Shield } from "lucide-react";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — TrustShield" },
-      { name: "description", content: "TrustShield Privacy Policy." },
+      { title: "Privacy Policy — Pecto" },
+      { name: "description", content: "Pecto Privacy Policy." },
     ],
   }),
   component: PrivacyPage,
@@ -17,7 +17,7 @@ function PrivacyPage() {
       <header className="mx-auto flex max-w-4xl items-center justify-between px-6 py-6">
         <Link to="/" className="flex items-center gap-2">
           <Shield className="h-5 w-5 text-primary" />
-          <span className="font-semibold tracking-tight">TrustShield</span>
+          <span className="font-semibold tracking-tight">Pecto</span>
         </Link>
         <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
           Back to home
@@ -31,7 +31,7 @@ function PrivacyPage() {
         <div className="prose prose-neutral dark:prose-invert mt-8 space-y-6 text-sm leading-relaxed">
           <section>
             <h2 className="text-lg font-semibold">1. Data We Collect</h2>
-            <p className="mt-2 text-muted-foreground">TrustShield collects only what's necessary to provide the Service:</p>
+            <p className="mt-2 text-muted-foreground">Pecto collects only what's necessary to provide the Service:</p>
             <ul className="mt-2 list-disc pl-6 text-muted-foreground">
               <li><strong className="text-foreground">Account information:</strong> email, display name (provided during signup)</li>
               <li><strong className="text-foreground">Profile preferences:</strong> industry, goals, tone/voice (optional, set by you)</li>
@@ -91,7 +91,7 @@ function PrivacyPage() {
           <section>
             <h2 className="text-lg font-semibold">7. Contact</h2>
             <p className="mt-2 text-muted-foreground">
-              Questions about this Privacy Policy? Contact us through the TrustShield support channel.
+               Questions about this Privacy Policy? Contact us through the Pecto support channel.
             </p>
           </section>
         </div>

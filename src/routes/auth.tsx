@@ -12,10 +12,10 @@ import { useTheme } from "@/hooks/use-theme";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — TrustShield" },
-      { name: "description", content: "Sign in or create your TrustShield account." },
-      { property: "og:title", content: "Sign in — TrustShield" },
-      { property: "og:description", content: "Sign in to your TrustShield account." },
+      { title: "Sign in — Pecto" },
+      { name: "description", content: "Sign in or create your Pecto account." },
+      { property: "og:title", content: "Sign in — Pecto" },
+      { property: "og:description", content: "Sign in to your Pecto account." },
     ],
   }),
   component: AuthPage,
@@ -82,7 +82,7 @@ function AuthPage() {
         <div className="mb-8 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <Shield className="h-5 w-5 text-primary" />
-            <span className="font-semibold tracking-tight">TrustShield</span>
+            <span className="font-semibold tracking-tight">Pecto</span>
           </Link>
           <ThemeToggle />
         </div>
@@ -96,7 +96,7 @@ function AuthPage() {
               ? "Start protecting your reputation in minutes."
               : mode === "forgot"
                 ? "We'll email you a reset link."
-                : "Sign in to your TrustShield dashboard."}
+                : "Sign in to your Pecto dashboard."}
           </p>
 
           {mode !== "forgot" && (

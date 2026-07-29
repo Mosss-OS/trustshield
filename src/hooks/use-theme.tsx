@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from "react";
 
-const STORAGE_KEY = "trustshield-theme";
+const STORAGE_KEY = "pecto-theme";
 
 type Theme = "light" | "dark";
 

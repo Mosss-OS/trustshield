@@ -49,7 +49,7 @@ function generateItemId(): string {
 export const Route = createFileRoute("/_authenticated/screening")({
   head: () => ({
     meta: [
-      { title: "Screening — TrustShield" },
+      { title: "Screening — Pecto" },
       { name: "description", content: "Analyze content for reputational risk with explainable AI." },
     ],
   }),

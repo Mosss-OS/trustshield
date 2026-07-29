@@ -6,13 +6,13 @@ import { useTheme } from "@/hooks/use-theme";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "TrustShield — Protect your reputation, grow your brand" },
+      { title: "Pecto — Guard your reputation, grow your brand" },
       {
         name: "description",
         content:
-          "TrustShield uses explainable AI to scan your online presence, flag genuine risks, and help you build a stronger personal brand — never suppressing what's true or newsworthy.",
+          "Pecto uses explainable AI to scan your online presence, flag genuine risks, and help you build a stronger personal brand — never suppressing what's true or newsworthy.",
       },
-      { property: "og:title", content: "TrustShield — Protect your reputation, grow your brand" },
+      { property: "og:title", content: "Pecto — Guard your reputation, grow your brand" },
       {
         property: "og:description",
         content:
@@ -31,7 +31,7 @@ function Landing() {
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <Link to="/" className="flex items-center gap-2">
           <Shield className="h-5 w-5 text-primary" />
-          <span className="font-semibold tracking-tight">TrustShield</span>
+          <span className="font-semibold tracking-tight">Pecto</span>
         </Link>
         <nav className="flex items-center gap-3">
           <button
@@ -61,7 +61,7 @@ function Landing() {
           <em className="text-primary">on your terms.</em>
         </h1>
         <p className="mx-auto mt-8 max-w-2xl text-lg text-muted-foreground">
-          TrustShield scans your online presence for genuine reputational risk, helps you respond
+          Pecto scans your online presence for genuine reputational risk, helps you respond
           well, and grows your personal brand — with every flag explained in plain language.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -111,7 +111,7 @@ function Landing() {
           <div className="mt-8 space-y-4 text-sm text-muted-foreground">
             <p>
               <span className="font-medium text-foreground">We never force-delete third-party content.</span>{" "}
-              TrustShield flags harmful, abusive, or provably false content so you can report it through
+              Pecto flags harmful, abusive, or provably false content so you can report it through
               official channels — it doesn't and can't reach into someone else's platform.
             </p>
             <p>
@@ -129,7 +129,7 @@ function Landing() {
 
       <footer className="border-t border-border py-8 text-center text-xs text-muted-foreground">
         <div className="flex items-center justify-center gap-4">
-          <span>© {new Date().getFullYear()} TrustShield</span>
+          <span>© {new Date().getFullYear()} Pecto</span>
           <span className="text-border">·</span>
           <Link to="/terms" className="hover:text-foreground">Terms of Service</Link>
           <span className="text-border">·</span>

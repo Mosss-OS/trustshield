@@ -25,7 +25,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — TrustShield" },
+      { title: "Settings — Pecto" },
       { name: "description", content: "Manage your profile, tone, monitored handles, and data." },
     ],
   }),
@@ -112,7 +112,7 @@ function SettingsPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `trustshield-data-export-${new Date().toISOString().split("T")[0]}.json`;
+      a.download = `pecto-data-export-${new Date().toISOString().split("T")[0]}.json`;
       a.click();
       URL.revokeObjectURL(url);
       logEventFn({ data: { action: "data_exported", entity_type: "user" } });
@@ -165,7 +165,7 @@ function SettingsPage() {
         <section className="rounded-2xl border border-border bg-card p-6">
           <h2 className="text-base font-semibold">Monitored handles</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Handles you want TrustShield to reference during screening and drafts.
+            Handles you want Pecto to reference during screening and drafts.
           </p>
           <div className="mt-4 space-y-2">
             {handles.map((h: any) => (
@@ -244,7 +244,7 @@ function SettingsPage() {
         <section className="rounded-2xl border border-border bg-card p-6">
           <h2 className="text-base font-semibold">Export my data</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Download all your TrustShield data as a JSON file. This includes your profile, screening results,
+            Download all your Pecto data as a JSON file. This includes your profile, screening results,
             brand content, alerts, and audit log.
           </p>
           <Button

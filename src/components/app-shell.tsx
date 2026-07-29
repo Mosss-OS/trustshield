@@ -43,7 +43,7 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
       <aside className="fixed inset-y-0 left-0 hidden w-60 border-r border-border bg-sidebar text-sidebar-foreground md:flex md:flex-col">
         <div className="flex items-center gap-2 px-5 pt-6 pb-8">
           <Shield className="h-5 w-5 text-primary" />
-          <span className="font-semibold tracking-tight">TrustShield</span>
+          <span className="font-semibold tracking-tight">Pecto</span>
         </div>
         <nav className="flex-1 space-y-1 px-3">
           {NAV.map(({ to, label, icon: Icon }) => {
@@ -91,7 +91,7 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
                 <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
                   <div className="flex items-center gap-2 px-5 pt-6 pb-8">
                     <Shield className="h-5 w-5 text-primary" />
-                    <span className="font-semibold tracking-tight">TrustShield</span>
+                    <span className="font-semibold tracking-tight">Pecto</span>
                   </div>
                   <nav className="flex-1 space-y-1 px-3">
                     {NAV.map(({ to, label, icon: Icon }) => {

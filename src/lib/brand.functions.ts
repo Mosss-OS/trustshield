@@ -32,7 +32,7 @@ export const draftPost = createServerFn({ method: "POST" })
     try {
       const { text } = await generateText({
         model: gateway("google/gemini-3.6-flash"),
-        system: `You are a personal-brand writer for TrustShield users. Write authentic, on-brand content that reflects the user's tone and goals. Never fabricate credentials, statistics, or quotes. Keep it truthful and specific.`,
+        system: `You are a personal-brand writer for Pecto users. Write authentic, on-brand content that reflects the user's tone and goals. Never fabricate credentials, statistics, or quotes. Keep it truthful and specific.`,
         prompt: `USER:
 Name: ${profile?.display_name ?? "(not set)"}
 Industry: ${profile?.industry ?? "(not set)"}

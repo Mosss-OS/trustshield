@@ -55,7 +55,7 @@ const PROVIDER_CONFIG: Record<IntegrationProvider, { label: string; description:
 export const Route = createFileRoute("/_authenticated/integrations")({
   head: () => ({
     meta: [
-      { title: "Integrations — TrustShield" },
+      { title: "Integrations — Pecto" },
       { name: "description", content: "Connect your social media accounts for monitoring." },
     ],
   }),
